@@ -4,9 +4,17 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y libasound2-dev
 
-ADD . /app/
+ADD .cargo /app/.cargo/
+ADD Cargo.toml Cargo.lock .cargo /app/
+ADD vendor /app/vendor/
 
-RUN cargo build --release
+RUN mkdir src && echo 'fn main() {}' > src/main.rs && \
+    cargo build --release --offline
+
+ADD src /app/src/
+
+RUN touch src/main.rs && \
+    cargo build --release --offline
 
 FROM debian:bullseye
 

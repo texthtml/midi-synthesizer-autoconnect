@@ -1,4 +1,6 @@
 /target/
 /Dockerfile
 /.gitignore
+/.dockerignore
 /README.md
+/.github/
