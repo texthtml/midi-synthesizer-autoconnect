@@ -113,7 +113,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "midi-synthetizer-autoconnect"
+name = "midi-synthesizer-autoconnect"
 version = "0.1.0"
 dependencies = [
  "alsa",

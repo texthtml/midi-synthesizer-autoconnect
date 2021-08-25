@@ -9,7 +9,7 @@ fn start() -> res::Res<()> {
 
 fn main() -> res::Res<()> {
     if std::env::var(tracing_subscriber::EnvFilter::DEFAULT_ENV).is_err() {
-        std::env::set_var(tracing_subscriber::EnvFilter::DEFAULT_ENV, "midi_synthetizer_autoconnect=info");
+        std::env::set_var(tracing_subscriber::EnvFilter::DEFAULT_ENV, "midi_synthesizer_autoconnect=info");
     }
 
     tracing_subscriber::fmt::init();

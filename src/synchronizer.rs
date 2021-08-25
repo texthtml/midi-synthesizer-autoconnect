@@ -13,8 +13,8 @@ impl listener::ListenerHandler for &Synchronizer {
         tracing::info!("{}", match self.connect_all()? {
             (true, true) => "Waiting for more MIDI sources",
             (true, false) => "Waiting for MIDI sources",
-            (false, true) => "Waiting for a synthetizer",
-            (false, false) => "Waiting for a synthetizer and MIDI sources",
+            (false, true) => "Waiting for a synthesizer",
+            (false, false) => "Waiting for a synthesizer and MIDI sources",
         });
 
         Ok(())
@@ -45,8 +45,8 @@ impl Synchronizer {
     fn auto_connect(&self, addr: alsa::seq::Addr) -> Res<()> {
         let port_info = self.seq.port_info(addr)?;
 
-        if Synchronizer::is_synthetizer(&port_info) {
-            self.detected("Synthetizer", &port_info)?;
+        if Synchronizer::is_synthesizer(&port_info) {
+            self.detected("Synthesizer", &port_info)?;
 
             let mut no_midi_sources = true;
 
@@ -61,10 +61,10 @@ impl Synchronizer {
         } else if Synchronizer::is_midi_source(&port_info) {
             self.detected("Midi source", &port_info)?;
 
-            if let Some(synthetizer) = self.synthetizer() {
-                self.connect(port_info.addr(), synthetizer.addr()).expect("connection failed");
+            if let Some(synthesizer) = self.synthesizer() {
+                self.connect(port_info.addr(), synthesizer.addr()).expect("connection failed");
             } else {
-                tracing::warn!("Cannot connect: no synthetizer available");
+                tracing::warn!("Cannot connect: no synthesizer available");
             }
         } else {
             self.detected("Unknown seq port", &port_info)?;
@@ -77,12 +77,12 @@ impl Synchronizer {
         let midi_sources : Vec<_> = self.midi_sources().collect();
         let no_midi_sources = midi_sources.is_empty();
 
-        if let Some(synthetizer) = self.synthetizer() {
-            self.detected("Synthetizer", &synthetizer)?;
+        if let Some(synthesizer) = self.synthesizer() {
+            self.detected("Synthesizer", &synthesizer)?;
 
             for midi_source in midi_sources {
                 self.detected("Midi source", &midi_source)?;
-                self.connect(midi_source.addr(), synthetizer.addr()).expect("connection failed");
+                self.connect(midi_source.addr(), synthesizer.addr()).expect("connection failed");
             }
 
             if no_midi_sources {
@@ -91,7 +91,7 @@ impl Synchronizer {
 
             Ok((true, !no_midi_sources))
         } else {
-            tracing::warn!("Cannot connect: no synthetizer available");
+            tracing::warn!("Cannot connect: no synthesizer available");
 
             for midi_source in midi_sources {
                 self.detected("Midi source", &midi_source)?;
@@ -105,8 +105,8 @@ impl Synchronizer {
         }
     }
 
-    fn connect(&self, sender: alsa::seq::Addr, synthetizer: alsa::seq::Addr) -> Res<(bool, alsa::seq::PortSubscribe)> {
-        self.seq.connect(sender, synthetizer).and_then(|(new, port_subscribe)| {
+    fn connect(&self, sender: alsa::seq::Addr, synthesizer: alsa::seq::Addr) -> Res<(bool, alsa::seq::PortSubscribe)> {
+        self.seq.connect(sender, synthesizer).and_then(|(new, port_subscribe)| {
             if new {
                 tracing::info!(
                     "{} has been connected to {}",
@@ -123,15 +123,15 @@ impl Synchronizer {
         })
     }
 
-    fn synthetizer(&self) -> Option<alsa::seq::PortInfo> {
-        self.seq.ports().find(Synchronizer::is_synthetizer)
+    fn synthesizer(&self) -> Option<alsa::seq::PortInfo> {
+        self.seq.ports().find(Synchronizer::is_synthesizer)
     }
 
     fn midi_sources(&self) -> impl Iterator<Item=alsa::seq::PortInfo> + '_ {
         self.seq.ports().filter(Synchronizer::is_midi_source)
     }
 
-    fn is_synthetizer(port_info: &alsa::seq::PortInfo) -> bool {
+    fn is_synthesizer(port_info: &alsa::seq::PortInfo) -> bool {
         port_info.get_type().contains(alsa::seq::PortType::SYNTHESIZER)
     }
 

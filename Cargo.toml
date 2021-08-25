@@ -1,12 +1,12 @@
 [package]
-name = "midi-synthetizer-autoconnect"
+name = "midi-synthesizer-autoconnect"
 version = "0.1.0"
 authors = ["Mathieu Rochette <mathieu@texthtml.net>"]
 edition = "2018"
-description = "Autoconnect MIDI inputs to a MIDI synthetizer"
-keywords = ["ALSA", "MIDI", "synthetizer"]
+description = "Autoconnect MIDI inputs to a MIDI synthesizer"
+keywords = ["ALSA", "MIDI", "synthesizer"]
 categories = ["command-line-utilities"]
-repository = "https://github.com/texthtml/midi-synthetizer-autoconnect"
+repository = "https://github.com/texthtml/midi-synthesizer-autoconnect"
 license = "AGPL-3.0"
 
 [dependencies]
