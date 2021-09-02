@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   docker:
@@ -32,8 +35,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          platforms: linux/amd64,linux/arm64,linux/arm
-          push: true
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+          push: github.ref == 'refs/heads/master'
           tags: texthtml/midi-synthesizer-autoconnect:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
