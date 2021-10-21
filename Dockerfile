@@ -1,8 +1,10 @@
-FROM rust:1.54-bullseye AS builder
+FROM alpine AS builder
+
+RUN apk add cargo --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+
+RUN apk add alsa-lib-dev
 
 WORKDIR /app
-
-RUN apt-get update && apt-get install -y libasound2-dev
 
 ADD .cargo /app/.cargo/
 ADD Cargo.toml Cargo.lock .cargo /app/
@@ -16,11 +18,9 @@ ADD src /app/src/
 RUN touch src/main.rs && \
     cargo build --release --offline
 
-FROM debian:bullseye
+FROM alpine
 
-RUN apt-get update && \
-    apt-get install -y libasound2 && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache libgcc alsa-lib
 
 COPY --from=builder /app/target/release/midi-synthesizer-autoconnect /usr/bin/
 
