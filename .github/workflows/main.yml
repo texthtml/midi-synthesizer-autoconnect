@@ -35,8 +35,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/arm64,linux/arm/v6
-          push: ${{ github.ref == 'refs/heads/main' }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v6
+          push: ${{ github.ref == 'refs/heads/master' }}
           tags: texthtml/midi-synthesizer-autoconnect:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
